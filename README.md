@@ -60,3 +60,8 @@ Or open in Visual Studio and press F5.
 - Alphabet set to lowercase a–z (26) so a length 4–5 password is crackable in seconds.
 - Progress bar denominator now grows per length searched, and shows 100% on found.
 - Added `capture-screens.ps1` (UI-Automation driver) + `screenshots/` for the report.
+
+### v1.3 — Test report
+- `TestReport.html` + rendered `TestReport.pdf`: cover page, UML diagram, requirement-by-
+  requirement functionality, single vs multi-thread performance, real screenshots, and the
+  challenges faced. `render-report.js` regenerates the PDF.
