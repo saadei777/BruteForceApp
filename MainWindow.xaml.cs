@@ -60,7 +60,14 @@ namespace BruteForceApp
             _attackStopwatch.Restart();
             _elapsedTimer.Start();
 
-            await _engine.StartAsync(_passwordManager.HashedPassword);
+            try
+            {
+                await _engine.StartAsync(_passwordManager.HashedPassword);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected if the run is cancelled (password found / user stop).
+            }
         }
 
         private void BtnStop_Click(object sender, RoutedEventArgs e)
@@ -130,6 +137,7 @@ namespace BruteForceApp
                 TxtFoundPassword.Text = password;
                 TxtFoundPassword.Foreground = System.Windows.Media.Brushes.LightGreen;
                 ProgressBar.Value = 100;
+                TxtProgress.Text = "100%";
                 SetAttackingState(false);
                 Log($"PASSWORD FOUND: \"{password}\" in {elapsed.TotalSeconds:F3} s");
             });

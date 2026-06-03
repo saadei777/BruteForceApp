@@ -17,6 +17,27 @@ namespace BruteForceApp
             _maxLength = maxLength;
         }
 
+        /// <summary>Number of characters in the alphabet.</summary>
+        public int CharsetLength => _charset.Length;
+
+        /// <summary>
+        /// Maps a numeric index in [0, charset^length) to its combination of the given
+        /// length, treating the index as a base-N number (N = alphabet size).
+        /// Lets threads each cover a contiguous slice of the search space on the fly,
+        /// with no need to materialise the whole list of candidates in memory.
+        /// </summary>
+        public string IndexToCombination(long index, int length)
+        {
+            int n = _charset.Length;
+            var chars = new char[length];
+            for (int i = length - 1; i >= 0; i--)
+            {
+                chars[i] = _charset[(int)(index % n)];
+                index /= n;
+            }
+            return new string(chars);
+        }
+
         /// <summary>
         /// Enumerates every combination from length 1 to maxLength in order.
         /// </summary>

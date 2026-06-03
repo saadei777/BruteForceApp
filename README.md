@@ -44,3 +44,19 @@ Or open in Visual Studio and press F5.
 - `BruteForceEngine`: multi-threaded attack, cancellation token, partitioned work
 - `PerformanceLogger`: single-thread and multi-thread benchmarks with speedup ratio
 - `MainWindow`: full GUI with progress bar, elapsed timer, start/stop, benchmark button
+
+### v1.1 — Task 1: UML class diagram
+- `UML_ClassDiagram.puml` (PlantUML source), `UML_ClassDiagram.html` (lecture-style
+  rendering), `UML_ClassDiagram.png` (image for the report)
+
+### v1.2 — Bug fixes, performance & demo tooling
+- **Fixed crash on password-found:** `Task.WaitAll(tasks, token)` threw
+  `OperationCanceledException` when the engine cancelled its own token; switched to a
+  plain `Task.WaitAll(tasks)` and guarded the awaited call.
+- **Memory/perf:** replaced per-length candidate materialisation (`.ToList()` of up to
+  millions of strings) with **index-range partitioning** — each thread maps a contiguous
+  slice of the index space to candidates on the fly via `IndexToCombination`. No large
+  allocations, genuinely parallel.
+- Alphabet set to lowercase a–z (26) so a length 4–5 password is crackable in seconds.
+- Progress bar denominator now grows per length searched, and shows 100% on found.
+- Added `capture-screens.ps1` (UI-Automation driver) + `screenshots/` for the report.

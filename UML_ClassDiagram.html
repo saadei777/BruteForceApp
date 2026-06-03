@@ -6,137 +6,136 @@
 <style>
   * { box-sizing: border-box; }
   body {
-    margin: 0; padding: 40px;
-    background: #ffffff;
+    margin: 0; padding: 36px 24px;
+    background: #f4f6fb;
     font-family: "Segoe UI", Arial, sans-serif;
-    color: #1a1a1a;
+    color: #1a1a2e;
   }
-  h1 {
-    text-align: center; font-size: 22px; margin: 0 0 4px;
-  }
-  .subtitle { text-align:center; color:#666; font-size:13px; margin-bottom:30px; }
+  h1 { text-align: center; font-size: 23px; margin: 0 0 4px; color:#1f2a44; }
+  .subtitle { text-align:center; color:#5a6378; font-size:13px; margin-bottom:24px; }
 
-  .canvas { position: relative; width: 1320px; margin: 0 auto; }
+  .canvas { position: relative; width: 1300px; height: 1300px; margin: 0 auto; }
 
   /* ---- UML class box ---- */
   .class {
     position: absolute;
-    width: 300px;
-    border: 2px solid #2c3e50;
-    background: #fdfdfd;
-    box-shadow: 2px 2px 0 rgba(0,0,0,0.08);
+    border: 1.6px solid #34406b;
+    background: #ffffff;
+    box-shadow: 3px 3px 7px rgba(40,50,90,0.14);
     font-family: Consolas, "Courier New", monospace;
     font-size: 12px;
   }
   .class .name {
-    background: #d6e4ff;
+    background: linear-gradient(#dbe5ff, #c4d4ff);
     text-align: center;
     font-weight: bold;
     font-family: "Segoe UI", Arial, sans-serif;
-    padding: 6px;
-    border-bottom: 2px solid #2c3e50;
+    padding: 6px 4px;
+    border-bottom: 1.6px solid #34406b;
     font-size: 14px;
+    color:#1f2a44;
   }
-  .class .stereo { display:block; font-weight:normal; font-style:italic; font-size:11px; color:#555; }
-  .class .attrs, .class .methods { padding: 6px 9px; }
-  .class .attrs { border-bottom: 2px solid #2c3e50; }
-  .class .attrs div, .class .methods div { padding: 1px 0; white-space: nowrap; }
+  .class.util .name { background: linear-gradient(#d8f5dd, #bfeecb); } /* utility/foundation */
+  .class.gui  .name { background: linear-gradient(#ffe6c7, #ffd6a3); } /* GUI */
+  .class .stereo { display:block; font-weight:normal; font-style:italic; font-size:11px; color:#566; }
+  .class .attrs, .class .methods { padding: 6px 10px; }
+  .class .attrs { border-bottom: 1.6px solid #34406b; min-height: 14px; }
+  .class .attrs div, .class .methods div { padding: 1.5px 0; white-space: nowrap; }
+
   .legend {
-    position:absolute; border:1px solid #999; background:#fafafa;
-    padding:10px 14px; font-size:12px; font-family:"Segoe UI",Arial;
-    line-height:1.7;
+    position:absolute; border:1.4px solid #8a93ad; background:#ffffff;
+    padding:11px 15px; font-size:12px; font-family:"Segoe UI",Arial;
+    line-height:1.9; box-shadow: 3px 3px 7px rgba(40,50,90,0.12);
   }
-  .legend b { display:block; margin-bottom:4px; }
+  .legend b { display:block; margin-bottom:5px; font-size:13px; color:#1f2a44; }
+  .legend .sym { display:inline-block; width:42px; color:#34406b; font-weight:bold; }
+
   svg { position:absolute; top:0; left:0; pointer-events:none; overflow:visible; }
-  .relabel { font-family:"Segoe UI",Arial; font-size:11px; fill:#333; }
-  .mult { font-family:Consolas; font-size:11px; fill:#c0392b; font-weight:bold; }
+  .relabel { font-family:"Segoe UI",Arial; font-size:11.5px; fill:#2a3550; }
+  .relabel.it { font-style:italic; fill:#3a4668; }
+  .mult { font-family:Consolas; font-size:11.5px; fill:#b03050; font-weight:bold; }
 </style>
 </head>
 <body>
 <h1>UML Class Diagram — BruteForce Password Cracker</h1>
-<div class="subtitle">WPF .NET 8 &nbsp;|&nbsp; Multi-threaded brute-force password recovery</div>
+<div class="subtitle">WPF&nbsp;·&nbsp;.NET 8 &nbsp;|&nbsp; Multi-threaded brute-force password recovery &nbsp;|&nbsp; layered by dependency</div>
 
-<div class="canvas" style="height: 1180px;">
+<div class="canvas">
 
-  <!-- SVG relationship layer -->
-  <svg width="1320" height="1180">
+  <!-- ===================== RELATIONSHIP LAYER ===================== -->
+  <svg width="1300" height="1300">
     <defs>
-      <!-- open triangle for generalization (not used here, no inheritance) -->
-      <!-- filled arrowhead for dependency/association direction -->
-      <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto">
-        <path d="M0,1 L10,5 L0,9" fill="none" stroke="#2c3e50" stroke-width="1.6"/>
+      <marker id="arrow" markerWidth="13" markerHeight="13" refX="9" refY="5" orient="auto">
+        <path d="M0,0.5 L10,5 L0,9.5" fill="none" stroke="#34406b" stroke-width="1.7"/>
       </marker>
-      <!-- filled diamond (composition) -->
-      <marker id="diamondF" markerWidth="20" markerHeight="14" refX="1" refY="7" orient="auto">
-        <path d="M1,7 L10,2 L19,7 L10,12 Z" fill="#2c3e50" stroke="#2c3e50"/>
+      <marker id="diamondF" markerWidth="22" markerHeight="14" refX="1.5" refY="7" orient="auto">
+        <path d="M1.5,7 L11,2 L20.5,7 L11,12 Z" fill="#34406b" stroke="#34406b"/>
       </marker>
-      <!-- hollow diamond (aggregation) -->
-      <marker id="diamondH" markerWidth="20" markerHeight="14" refX="1" refY="7" orient="auto">
-        <path d="M1,7 L10,2 L19,7 L10,12 Z" fill="#ffffff" stroke="#2c3e50" stroke-width="1.4"/>
+      <marker id="diamondH" markerWidth="22" markerHeight="14" refX="1.5" refY="7" orient="auto">
+        <path d="M1.5,7 L11,2 L20.5,7 L11,12 Z" fill="#ffffff" stroke="#34406b" stroke-width="1.5"/>
       </marker>
     </defs>
 
-    <!-- MainWindow (composition) PasswordManager : filled diamond at MainWindow -->
-    <!-- MainWindow center-bottom ~ (250,250) ; PasswordManager top ~ (250,320) -->
-    <path d="M210,250 L120,330" stroke="#2c3e50" stroke-width="1.8"
-          marker-start="url(#diamondF)" fill="none"/>
-    <text x="120" y="300" class="relabel">owns</text>
-    <text x="150" y="322" class="mult">1</text>
-
-    <!-- MainWindow composition PerformanceLogger -->
-    <path d="M250,250 L250,560" stroke="#2c3e50" stroke-width="1.8"
-          marker-start="url(#diamondF)" fill="none"/>
-    <text x="258" y="400" class="relabel">owns</text>
-    <text x="258" y="552" class="mult">1</text>
-
-    <!-- MainWindow aggregation BruteForceEngine : hollow diamond -->
-    <path d="M300,250 L470,330" stroke="#2c3e50" stroke-width="1.8"
+    <!-- 1. MainWindow <>-- BruteForceEngine  (aggregation: creates on demand) -->
+    <path d="M500,330 L250,410" stroke="#34406b" stroke-width="1.8"
           marker-start="url(#diamondH)" fill="none"/>
-    <text x="360" y="300" class="relabel">creates</text>
-    <text x="445" y="322" class="mult">0..1</text>
+    <text x="300" y="360" class="relabel it">creates</text>
+    <text x="258" y="404" class="mult">0..1</text>
 
-    <!-- BruteForceEngine dependency PasswordValidator (dashed arrow) -->
-    <path d="M780,400 L900,400" stroke="#2c3e50" stroke-width="1.6"
-          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
-    <text x="790" y="392" class="relabel">«uses»</text>
-
-    <!-- BruteForceEngine dependency BruteForceGenerator (dashed) -->
-    <path d="M780,470 L900,560" stroke="#2c3e50" stroke-width="1.6"
-          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
-    <text x="800" y="540" class="relabel">«uses»</text>
-
-    <!-- PerformanceLogger dependency PasswordValidator -->
-    <path d="M480,610 L900,430" stroke="#2c3e50" stroke-width="1.6"
-          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
-    <text x="640" y="500" class="relabel">«uses»</text>
-
-    <!-- PerformanceLogger dependency BruteForceGenerator -->
-    <path d="M480,650 L900,610" stroke="#2c3e50" stroke-width="1.6"
-          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
-
-    <!-- PerformanceLogger composition BenchmarkResult (filled diamond) -->
-    <path d="M250,720 L250,900" stroke="#2c3e50" stroke-width="1.8"
+    <!-- 2. MainWindow ◆-- PerformanceLogger (composition: owns) -->
+    <path d="M790,330 L1010,410" stroke="#34406b" stroke-width="1.8"
           marker-start="url(#diamondF)" fill="none"/>
-    <text x="258" y="810" class="relabel">produces</text>
-    <text x="258" y="892" class="mult">*</text>
+    <text x="880" y="360" class="relabel it">owns</text>
+    <text x="985" y="404" class="mult">1</text>
 
-    <!-- PasswordValidator dependency PasswordManager (calls HashPassword) -->
-    <!-- routed up & over to PasswordManager (top-left) -->
-    <path d="M1050,330 L1050,150 L240,150 L240,330" stroke="#2c3e50" stroke-width="1.6"
-          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
-    <text x="540" y="143" class="relabel">«calls PasswordManager.HashPassword»</text>
+    <!-- 3. MainWindow ◆-- PasswordManager (composition: owns) — routed down left margin -->
+    <path d="M460,170 L28,170 L28,1130 L470,1130" stroke="#34406b" stroke-width="1.8"
+          marker-start="url(#diamondF)" fill="none"/>
+    <text x="40" y="160" class="relabel it">owns</text>
+    <text x="40" y="1122" class="mult">1</text>
 
-    <!-- BruteForceGenerator dependency PasswordManager (uses AllCharacters) -->
-    <path d="M1100,560 L1180,560 L1180,120 L200,120 L200,330" stroke="#2c3e50" stroke-width="1.6"
+    <!-- 4. BruteForceEngine ┄> PasswordValidator -->
+    <path d="M250,672 L430,790" stroke="#34406b" stroke-width="1.6"
           stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
-    <text x="540" y="113" class="relabel">«uses PasswordManager.AllCharacters»</text>
+    <text x="300" y="745" class="relabel it">«uses»</text>
+
+    <!-- 5. BruteForceEngine ┄> BruteForceGenerator -->
+    <path d="M400,560 L770,790" stroke="#34406b" stroke-width="1.6"
+          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
+    <text x="470" y="650" class="relabel it">«uses»</text>
+
+    <!-- 6. PerformanceLogger ┄> BruteForceGenerator -->
+    <path d="M980,553 L860,790" stroke="#34406b" stroke-width="1.6"
+          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
+    <text x="930" y="690" class="relabel it">«uses»</text>
+
+    <!-- 7. PerformanceLogger ┄> PasswordValidator -->
+    <path d="M905,553 L645,790" stroke="#34406b" stroke-width="1.6"
+          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
+    <text x="690" y="690" class="relabel it">«uses»</text>
+
+    <!-- 8. PerformanceLogger ◆-- BenchmarkResult (composition: produces) -->
+    <path d="M1090,553 L1090,650" stroke="#34406b" stroke-width="1.8"
+          marker-start="url(#diamondF)" fill="none"/>
+    <text x="1098" y="600" class="relabel it">produces</text>
+    <text x="1098" y="645" class="mult">*</text>
+
+    <!-- 9. PasswordValidator ┄> PasswordManager (calls HashPassword) -->
+    <path d="M515,899 L560,1050" stroke="#34406b" stroke-width="1.6"
+          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
+    <text x="360" y="985" class="relabel it">«calls HashPassword»</text>
+
+    <!-- 10. BruteForceGenerator ┄> PasswordManager (uses AllCharacters) -->
+    <path d="M825,967 L745,1050" stroke="#34406b" stroke-width="1.6"
+          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
+    <text x="828" y="1015" class="relabel it">«uses AllCharacters»</text>
   </svg>
 
-  <!-- ============ CLASS BOXES ============ -->
+  <!-- ===================== CLASS BOXES ===================== -->
 
-  <!-- MainWindow -->
-  <div class="class" style="left:120px; top:40px; width:340px;">
-    <div class="name">MainWindow <span class="stereo">(GUI — WPF Window)</span></div>
+  <!-- MainWindow (GUI) -->
+  <div class="class gui" style="left:460px; top:40px; width:360px;">
+    <div class="name">MainWindow <span class="stereo">«WPF Window — GUI»</span></div>
     <div class="attrs">
       <div>- _passwordManager : PasswordManager</div>
       <div>- _logger : PerformanceLogger</div>
@@ -156,49 +155,8 @@
     </div>
   </div>
 
-  <!-- PasswordManager -->
-  <div class="class" style="left:20px; top:330px;">
-    <div class="name">PasswordManager</div>
-    <div class="attrs">
-      <div>+ {static} SALT : string</div>
-      <div>+ {static} AllCharacters : string</div>
-      <div>+ GeneratedPassword : string</div>
-      <div>+ HashedPassword : string</div>
-    </div>
-    <div class="methods">
-      <div>+ CreatePassword() : void</div>
-      <div>+ {static} HashPassword(in) : string</div>
-    </div>
-  </div>
-
-  <!-- PerformanceLogger -->
-  <div class="class" style="left:100px; top:560px;">
-    <div class="name">PerformanceLogger</div>
-    <div class="attrs">
-      <div>- _results : List&lt;BenchmarkResult&gt;</div>
-    </div>
-    <div class="methods">
-      <div>+ RunSingleThread(hash) : BenchmarkResult</div>
-      <div>+ RunMultiThread(hash, n) : BenchmarkResult</div>
-      <div>+ BuildReport() : string</div>
-      <div>+ Clear() : void</div>
-    </div>
-  </div>
-
-  <!-- BenchmarkResult -->
-  <div class="class" style="left:100px; top:900px;">
-    <div class="name">BenchmarkResult <span class="stereo">«record»</span></div>
-    <div class="attrs">
-      <div>+ Mode : string</div>
-      <div>+ Elapsed : TimeSpan</div>
-      <div>+ CandidatesChecked : long</div>
-      <div>+ FoundPassword : string?</div>
-    </div>
-    <div class="methods"><div>&nbsp;</div></div>
-  </div>
-
   <!-- BruteForceEngine -->
-  <div class="class" style="left:480px; top:330px;">
+  <div class="class" style="left:60px; top:410px; width:340px;">
     <div class="name">BruteForceEngine</div>
     <div class="attrs">
       <div>- _threadCount : int</div>
@@ -218,8 +176,34 @@
     </div>
   </div>
 
+  <!-- PerformanceLogger -->
+  <div class="class" style="left:900px; top:410px; width:360px;">
+    <div class="name">PerformanceLogger</div>
+    <div class="attrs">
+      <div>- _results : List&lt;BenchmarkResult&gt;</div>
+    </div>
+    <div class="methods">
+      <div>+ RunSingleThread(hash) : BenchmarkResult</div>
+      <div>+ RunMultiThread(hash, n) : BenchmarkResult</div>
+      <div>+ BuildReport() : string</div>
+      <div>+ Clear() : void</div>
+    </div>
+  </div>
+
+  <!-- BenchmarkResult -->
+  <div class="class" style="left:940px; top:650px; width:300px;">
+    <div class="name">BenchmarkResult <span class="stereo">«record»</span></div>
+    <div class="attrs">
+      <div>+ Mode : string</div>
+      <div>+ Elapsed : TimeSpan</div>
+      <div>+ CandidatesChecked : long</div>
+      <div>+ FoundPassword : string?</div>
+    </div>
+    <div class="methods"><div>&nbsp;</div></div>
+  </div>
+
   <!-- PasswordValidator -->
-  <div class="class" style="left:900px; top:330px;">
+  <div class="class" style="left:360px; top:790px; width:310px;">
     <div class="name">PasswordValidator</div>
     <div class="attrs">
       <div>- _targetHash : string</div>
@@ -231,7 +215,7 @@
   </div>
 
   <!-- BruteForceGenerator -->
-  <div class="class" style="left:900px; top:560px;">
+  <div class="class" style="left:720px; top:790px; width:350px;">
     <div class="name">BruteForceGenerator</div>
     <div class="attrs">
       <div>- _charset : string</div>
@@ -246,14 +230,29 @@
     </div>
   </div>
 
+  <!-- PasswordManager (foundation / utility) -->
+  <div class="class util" style="left:470px; top:1050px; width:360px;">
+    <div class="name">PasswordManager <span class="stereo">«hashing + password creation»</span></div>
+    <div class="attrs">
+      <div>+ {static} SALT : string</div>
+      <div>+ {static} AllCharacters : string</div>
+      <div>+ GeneratedPassword : string</div>
+      <div>+ HashedPassword : string</div>
+    </div>
+    <div class="methods">
+      <div>+ CreatePassword() : void</div>
+      <div>+ {static} HashPassword(input) : string</div>
+    </div>
+  </div>
+
   <!-- Legend -->
-  <div class="legend" style="left:760px; top:760px; width:430px;">
-    <b>Legend (UML notation)</b>
-    ◆——  Composition (filled diamond, part can't exist without whole)<br>
-    ◇——  Aggregation (hollow diamond, part exists independently)<br>
-    ----&gt;  Dependency / «uses» (dashed arrow)<br>
-    + public&nbsp;&nbsp; - private&nbsp;&nbsp; # protected&nbsp;&nbsp; {static}<br>
-    Multiplicity: 1, 0..1, * (many)
+  <div class="legend" style="left:60px; top:1080px; width:360px;">
+    <b>Legend — UML notation</b>
+    <span class="sym">◆——</span> Composition (whole owns part)<br>
+    <span class="sym">◇——</span> Aggregation (part lives independently)<br>
+    <span class="sym">┄&gt;</span> Dependency / «uses» (dashed arrow)<br>
+    <span class="sym">+ -</span> public / private &nbsp;·&nbsp; {static}<br>
+    <span class="sym">1 *</span> multiplicity (1, 0..1, * = many)
   </div>
 
 </div>

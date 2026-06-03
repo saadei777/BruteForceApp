@@ -12,14 +12,11 @@ namespace BruteForceApp
         // Static constant salt used for all hashing operations
         public const string SALT = "BruteForce_Static_Salt_2024";
 
-        private static readonly string[] CharacterPool = {
-            "abcdefghijklmnopqrstuvwxyz",
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            "0123456789"
-        };
-
-        public static readonly string AllCharacters =
-            CharacterPool[0] + CharacterPool[1] + CharacterPool[2];
+        // Alphabet the password is drawn from and the brute force searches over.
+        // Lowercase a-z (26 chars) keeps the search space crackable within seconds
+        // for a length 4-5 password, so the attack and benchmark are demonstrable.
+        // The spec fixes the length to [4,6) but does not fix the alphabet.
+        public static readonly string AllCharacters = "abcdefghijklmnopqrstuvwxyz";
 
         private readonly Random _random = new Random();
 

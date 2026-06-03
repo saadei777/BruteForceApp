@@ -53,31 +53,36 @@ namespace BruteForceApp
             string? found = null;
             using var cts = new CancellationTokenSource();
 
+            var gen = new BruteForceGenerator(maxLength: 6);
             var sw = Stopwatch.StartNew();
 
             for (int length = 1; length <= 6 && !cts.IsCancellationRequested; length++)
             {
-                var gen = new BruteForceGenerator(maxLength: length);
-                var candidates = new System.Collections.Concurrent.ConcurrentQueue<string>(gen.GenerateOfLength(length));
+                long total = gen.CombinationsForLength(length);
+                long chunk = (total + threadCount - 1) / threadCount;
 
                 var threads = new Thread[threadCount];
                 for (int t = 0; t < threadCount; t++)
                 {
+                    long start = (long)t * chunk;
+                    long end = Math.Min(start + chunk, total);
+                    int len = length;
                     threads[t] = new Thread(() =>
                     {
-                        while (candidates.TryDequeue(out var candidate))
+                        // Each thread scans its own contiguous slice of the index space.
+                        for (long idx = start; idx < end; idx++)
                         {
                             if (cts.Token.IsCancellationRequested) return;
                             Interlocked.Increment(ref count);
-                            if (validator.IsMatch(candidate))
+                            string cand = gen.IndexToCombination(idx, len);
+                            if (validator.IsMatch(cand))
                             {
-                                found = candidate;
+                                found = cand;
                                 cts.Cancel();
                                 return;
                             }
                         }
-                    });
-                    threads[t].IsBackground = true;
+                    }) { IsBackground = true };
                     threads[t].Start();
                 }
 

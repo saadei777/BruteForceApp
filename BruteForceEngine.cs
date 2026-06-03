@@ -40,9 +40,7 @@ namespace BruteForceApp
             _cts = new CancellationTokenSource();
             var token = _cts.Token;
             _checkedCount = 0;
-
-            var generator = new BruteForceGenerator(maxLength: 6);
-            _totalCount = generator.TotalCombinations();
+            _totalCount = 0; // grows as deeper lengths are searched (see RunAttack)
 
             return Task.Run(() => RunAttack(targetHash, token), token);
         }
@@ -59,58 +57,73 @@ namespace BruteForceApp
         {
             var sw = Stopwatch.StartNew();
             var validator = new PasswordValidator(targetHash);
+            var generator = new BruteForceGenerator(maxLength: 6);
 
-            // Process each password length with its own parallel batch
+            // Search length by length, starting at 1 (the engine does not know the
+            // real password length in advance).
             for (int length = 1; length <= 6; length++)
             {
                 if (token.IsCancellationRequested) break;
 
-                var lengthGen = new BruteForceGenerator(maxLength: length);
-                // Materialise this length's candidates so we can partition them
-                var candidates = lengthGen.GenerateOfLength(length).ToList();
+                // Total candidates of this length = alphabet^length.
+                long total = generator.CombinationsForLength(length);
 
-                // Partition candidates into (threadCount) slices
-                var slices = Partition(candidates, _threadCount);
+                // The engine doesn't know the real length, so the "total" used for the
+                // progress bar grows to include each length as we reach it. This keeps
+                // the bar meaningful (e.g. ~80% of the length-4 space) instead of being
+                // dwarfed by the full length-6 keyspace from the start.
+                _totalCount += total;
 
-                var tasks = slices.Select(slice => Task.Run(() =>
+                // Split [0, total) into one contiguous index range per thread. Every
+                // thread runs simultaneously over its own slice, generating each
+                // candidate on the fly — no shared list, no materialisation.
+                long chunk = (total + _threadCount - 1) / _threadCount;
+
+                var tasks = new Task[_threadCount];
+                for (int t = 0; t < _threadCount; t++)
                 {
-                    foreach (var candidate in slice)
-                    {
-                        if (token.IsCancellationRequested) return;
+                    long start = (long)t * chunk;
+                    long end = Math.Min(start + chunk, total);
+                    tasks[t] = Task.Run(() => SearchRange(generator, validator, length,
+                                                          start, end, sw, token), token);
+                }
 
-                        if (validator.IsMatch(candidate))
-                        {
-                            sw.Stop();
-                            _cts!.Cancel(); // stop all other threads
-                            PasswordFound?.Invoke(candidate, sw.Elapsed);
-                            return;
-                        }
-
-                        long done = Interlocked.Increment(ref _checkedCount);
-                        // Report progress every 5000 checks to avoid UI flooding
-                        if (done % 5000 == 0)
-                            ProgressUpdated?.Invoke(done, _totalCount);
-                    }
-                }, token)).ToArray();
-
-                Task.WaitAll(tasks, token);
+                // Wait WITHOUT passing the token: when the password is found we cancel
+                // the token ourselves, and Task.WaitAll(tasks, token) would then throw
+                // OperationCanceledException. The threads already exit promptly on
+                // cancellation, so a plain WaitAll is what we want.
+                try { Task.WaitAll(tasks); }
+                catch (AggregateException) { /* tasks honour cancellation by returning */ }
             }
 
             if (!token.IsCancellationRequested)
                 AttackStopped?.Invoke();
         }
 
-        private static List<List<T>> Partition<T>(List<T> source, int parts)
+        /// <summary>
+        /// One thread's work: validate every candidate whose index falls in [start, end).
+        /// </summary>
+        private void SearchRange(BruteForceGenerator generator, PasswordValidator validator,
+                                 int length, long start, long end, Stopwatch sw, CancellationToken token)
         {
-            var result = new List<List<T>>(parts);
-            int size = (int)Math.Ceiling(source.Count / (double)parts);
-            for (int i = 0; i < parts; i++)
+            for (long idx = start; idx < end; idx++)
             {
-                int start = i * size;
-                if (start >= source.Count) break;
-                result.Add(source.GetRange(start, Math.Min(size, source.Count - start)));
+                if (token.IsCancellationRequested) return;
+
+                string candidate = generator.IndexToCombination(idx, length);
+                if (validator.IsMatch(candidate))
+                {
+                    sw.Stop();
+                    _cts!.Cancel(); // stop every other thread immediately
+                    PasswordFound?.Invoke(candidate, sw.Elapsed);
+                    return;
+                }
+
+                long done = Interlocked.Increment(ref _checkedCount);
+                // Throttle UI updates to avoid flooding the dispatcher.
+                if (done % 20000 == 0)
+                    ProgressUpdated?.Invoke(done, _totalCount);
             }
-            return result;
         }
     }
 }
