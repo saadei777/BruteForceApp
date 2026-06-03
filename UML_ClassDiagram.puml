@@ -1,0 +1,106 @@
+@startuml BruteForceApp
+
+skinparam classBackgroundColor #313244
+skinparam classBorderColor #89B4FA
+skinparam classHeaderBackgroundColor #45475A
+skinparam classFontColor #CDD6F4
+skinparam arrowColor #89B4FA
+skinparam backgroundColor #1E1E2E
+skinparam defaultFontName Consolas
+
+class PasswordManager {
+  +{static} SALT : string
+  +{static} AllCharacters : string
+  +GeneratedPassword : string
+  +HashedPassword : string
+  --
+  +CreatePassword() : void
+  +{static} HashPassword(input : string) : string
+}
+
+class PasswordValidator {
+  -_targetHash : string
+  --
+  +PasswordValidator(targetHash : string)
+  +IsMatch(candidate : string) : bool
+}
+
+class BruteForceGenerator {
+  -_charset : string
+  -_maxLength : int
+  --
+  +BruteForceGenerator(maxLength : int)
+  +GenerateAll() : IEnumerable<string>
+  +GenerateOfLength(length : int) : IEnumerable<string>
+  +CombinationsForLength(length : int) : long
+  +TotalCombinations() : long
+}
+
+class BruteForceEngine {
+  -_threadCount : int
+  -_cts : CancellationTokenSource
+  -_checkedCount : long
+  -_totalCount : long
+  +ThreadCount : int
+  --
+  +StartAsync(targetHash : string) : Task
+  +Stop() : void
+  -RunAttack(targetHash, token) : void
+  -Partition<T>(source, parts) : List<List<T>>
+  ..Events..
+  +ProgressUpdated : Action<long, long>
+  +PasswordFound : Action<string, TimeSpan>
+  +AttackStopped : Action
+}
+
+class PerformanceLogger {
+  -_results : List<BenchmarkResult>
+  --
+  +RunSingleThread(targetHash : string) : BenchmarkResult
+  +RunMultiThread(targetHash : string, threadCount : int) : BenchmarkResult
+  +BuildReport() : string
+  +Clear() : void
+}
+
+class "BenchmarkResult <<record>>" as BenchmarkResult {
+  +Mode : string
+  +Elapsed : TimeSpan
+  +CandidatesChecked : long
+  +FoundPassword : string?
+}
+
+class MainWindow {
+  -_passwordManager : PasswordManager
+  -_logger : PerformanceLogger
+  -_engine : BruteForceEngine
+  -_elapsedTimer : DispatcherTimer
+  -_attackStopwatch : Stopwatch
+  --
+  +MainWindow()
+  -BtnGenerate_Click() : void
+  -BtnStart_Click() : void
+  -BtnStop_Click() : void
+  -BtnBenchmark_Click() : void
+  -OnProgressUpdated(checked, total) : void
+  -OnPasswordFound(password, elapsed) : void
+  -OnAttackStopped() : void
+  -SetAttackingState(attacking : bool) : void
+  -Log(message : string) : void
+}
+
+' Relationships
+MainWindow *-- PasswordManager : owns
+MainWindow *-- PerformanceLogger : owns
+MainWindow o-- BruteForceEngine : creates on attack
+
+BruteForceEngine --> PasswordValidator : creates & uses
+BruteForceEngine --> BruteForceGenerator : creates & uses
+
+PerformanceLogger --> PasswordValidator : creates & uses
+PerformanceLogger --> BruteForceGenerator : creates & uses
+PerformanceLogger --> BenchmarkResult : produces
+
+PasswordValidator ..> PasswordManager : calls HashPassword()
+BruteForceGenerator ..> PasswordManager : uses AllCharacters
+
+@enduml
