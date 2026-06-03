@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>UML Class Diagram — BruteForce Password Cracker</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px;
+    background: #ffffff;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #1a1a1a;
+  }
+  h1 {
+    text-align: center; font-size: 22px; margin: 0 0 4px;
+  }
+  .subtitle { text-align:center; color:#666; font-size:13px; margin-bottom:30px; }
+
+  .canvas { position: relative; width: 1320px; margin: 0 auto; }
+
+  /* ---- UML class box ---- */
+  .class {
+    position: absolute;
+    width: 300px;
+    border: 2px solid #2c3e50;
+    background: #fdfdfd;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.08);
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 12px;
+  }
+  .class .name {
+    background: #d6e4ff;
+    text-align: center;
+    font-weight: bold;
+    font-family: "Segoe UI", Arial, sans-serif;
+    padding: 6px;
+    border-bottom: 2px solid #2c3e50;
+    font-size: 14px;
+  }
+  .class .stereo { display:block; font-weight:normal; font-style:italic; font-size:11px; color:#555; }
+  .class .attrs, .class .methods { padding: 6px 9px; }
+  .class .attrs { border-bottom: 2px solid #2c3e50; }
+  .class .attrs div, .class .methods div { padding: 1px 0; white-space: nowrap; }
+  .legend {
+    position:absolute; border:1px solid #999; background:#fafafa;
+    padding:10px 14px; font-size:12px; font-family:"Segoe UI",Arial;
+    line-height:1.7;
+  }
+  .legend b { display:block; margin-bottom:4px; }
+  svg { position:absolute; top:0; left:0; pointer-events:none; overflow:visible; }
+  .relabel { font-family:"Segoe UI",Arial; font-size:11px; fill:#333; }
+  .mult { font-family:Consolas; font-size:11px; fill:#c0392b; font-weight:bold; }
+</style>
+</head>
+<body>
+<h1>UML Class Diagram — BruteForce Password Cracker</h1>
+<div class="subtitle">WPF .NET 8 &nbsp;|&nbsp; Multi-threaded brute-force password recovery</div>
+
+<div class="canvas" style="height: 1180px;">
+
+  <!-- SVG relationship layer -->
+  <svg width="1320" height="1180">
+    <defs>
+      <!-- open triangle for generalization (not used here, no inheritance) -->
+      <!-- filled arrowhead for dependency/association direction -->
+      <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto">
+        <path d="M0,1 L10,5 L0,9" fill="none" stroke="#2c3e50" stroke-width="1.6"/>
+      </marker>
+      <!-- filled diamond (composition) -->
+      <marker id="diamondF" markerWidth="20" markerHeight="14" refX="1" refY="7" orient="auto">
+        <path d="M1,7 L10,2 L19,7 L10,12 Z" fill="#2c3e50" stroke="#2c3e50"/>
+      </marker>
+      <!-- hollow diamond (aggregation) -->
+      <marker id="diamondH" markerWidth="20" markerHeight="14" refX="1" refY="7" orient="auto">
+        <path d="M1,7 L10,2 L19,7 L10,12 Z" fill="#ffffff" stroke="#2c3e50" stroke-width="1.4"/>
+      </marker>
+    </defs>
+
+    <!-- MainWindow (composition) PasswordManager : filled diamond at MainWindow -->
+    <!-- MainWindow center-bottom ~ (250,250) ; PasswordManager top ~ (250,320) -->
+    <path d="M210,250 L120,330" stroke="#2c3e50" stroke-width="1.8"
+          marker-start="url(#diamondF)" fill="none"/>
+    <text x="120" y="300" class="relabel">owns</text>
+    <text x="150" y="322" class="mult">1</text>
+
+    <!-- MainWindow composition PerformanceLogger -->
+    <path d="M250,250 L250,560" stroke="#2c3e50" stroke-width="1.8"
+          marker-start="url(#diamondF)" fill="none"/>
+    <text x="258" y="400" class="relabel">owns</text>
+    <text x="258" y="552" class="mult">1</text>
+
+    <!-- MainWindow aggregation BruteForceEngine : hollow diamond -->
+    <path d="M300,250 L470,330" stroke="#2c3e50" stroke-width="1.8"
+          marker-start="url(#diamondH)" fill="none"/>
+    <text x="360" y="300" class="relabel">creates</text>
+    <text x="445" y="322" class="mult">0..1</text>
+
+    <!-- BruteForceEngine dependency PasswordValidator (dashed arrow) -->
+    <path d="M780,400 L900,400" stroke="#2c3e50" stroke-width="1.6"
+          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
+    <text x="790" y="392" class="relabel">«uses»</text>
+
+    <!-- BruteForceEngine dependency BruteForceGenerator (dashed) -->
+    <path d="M780,470 L900,560" stroke="#2c3e50" stroke-width="1.6"
+          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
+    <text x="800" y="540" class="relabel">«uses»</text>
+
+    <!-- PerformanceLogger dependency PasswordValidator -->
+    <path d="M480,610 L900,430" stroke="#2c3e50" stroke-width="1.6"
+          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
+    <text x="640" y="500" class="relabel">«uses»</text>
+
+    <!-- PerformanceLogger dependency BruteForceGenerator -->
+    <path d="M480,650 L900,610" stroke="#2c3e50" stroke-width="1.6"
+          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
+
+    <!-- PerformanceLogger composition BenchmarkResult (filled diamond) -->
+    <path d="M250,720 L250,900" stroke="#2c3e50" stroke-width="1.8"
+          marker-start="url(#diamondF)" fill="none"/>
+    <text x="258" y="810" class="relabel">produces</text>
+    <text x="258" y="892" class="mult">*</text>
+
+    <!-- PasswordValidator dependency PasswordManager (calls HashPassword) -->
+    <!-- routed up & over to PasswordManager (top-left) -->
+    <path d="M1050,330 L1050,150 L240,150 L240,330" stroke="#2c3e50" stroke-width="1.6"
+          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
+    <text x="540" y="143" class="relabel">«calls PasswordManager.HashPassword»</text>
+
+    <!-- BruteForceGenerator dependency PasswordManager (uses AllCharacters) -->
+    <path d="M1100,560 L1180,560 L1180,120 L200,120 L200,330" stroke="#2c3e50" stroke-width="1.6"
+          stroke-dasharray="7,5" marker-end="url(#arrow)" fill="none"/>
+    <text x="540" y="113" class="relabel">«uses PasswordManager.AllCharacters»</text>
+  </svg>
+
+  <!-- ============ CLASS BOXES ============ -->
+
+  <!-- MainWindow -->
+  <div class="class" style="left:120px; top:40px; width:340px;">
+    <div class="name">MainWindow <span class="stereo">(GUI — WPF Window)</span></div>
+    <div class="attrs">
+      <div>- _passwordManager : PasswordManager</div>
+      <div>- _logger : PerformanceLogger</div>
+      <div>- _engine : BruteForceEngine</div>
+      <div>- _elapsedTimer : DispatcherTimer</div>
+      <div>- _attackStopwatch : Stopwatch</div>
+    </div>
+    <div class="methods">
+      <div>+ MainWindow()</div>
+      <div>- BtnGenerate_Click() : void</div>
+      <div>- BtnStart_Click() : void</div>
+      <div>- BtnStop_Click() : void</div>
+      <div>- BtnBenchmark_Click() : void</div>
+      <div>- OnProgressUpdated(c, t) : void</div>
+      <div>- OnPasswordFound(pwd, ts) : void</div>
+      <div>- OnAttackStopped() : void</div>
+    </div>
+  </div>
+
+  <!-- PasswordManager -->
+  <div class="class" style="left:20px; top:330px;">
+    <div class="name">PasswordManager</div>
+    <div class="attrs">
+      <div>+ {static} SALT : string</div>
+      <div>+ {static} AllCharacters : string</div>
+      <div>+ GeneratedPassword : string</div>
+      <div>+ HashedPassword : string</div>
+    </div>
+    <div class="methods">
+      <div>+ CreatePassword() : void</div>
+      <div>+ {static} HashPassword(in) : string</div>
+    </div>
+  </div>
+
+  <!-- PerformanceLogger -->
+  <div class="class" style="left:100px; top:560px;">
+    <div class="name">PerformanceLogger</div>
+    <div class="attrs">
+      <div>- _results : List&lt;BenchmarkResult&gt;</div>
+    </div>
+    <div class="methods">
+      <div>+ RunSingleThread(hash) : BenchmarkResult</div>
+      <div>+ RunMultiThread(hash, n) : BenchmarkResult</div>
+      <div>+ BuildReport() : string</div>
+      <div>+ Clear() : void</div>
+    </div>
+  </div>
+
+  <!-- BenchmarkResult -->
+  <div class="class" style="left:100px; top:900px;">
+    <div class="name">BenchmarkResult <span class="stereo">«record»</span></div>
+    <div class="attrs">
+      <div>+ Mode : string</div>
+      <div>+ Elapsed : TimeSpan</div>
+      <div>+ CandidatesChecked : long</div>
+      <div>+ FoundPassword : string?</div>
+    </div>
+    <div class="methods"><div>&nbsp;</div></div>
+  </div>
+
+  <!-- BruteForceEngine -->
+  <div class="class" style="left:480px; top:330px;">
+    <div class="name">BruteForceEngine</div>
+    <div class="attrs">
+      <div>- _threadCount : int</div>
+      <div>- _cts : CancellationTokenSource</div>
+      <div>- _checkedCount : long</div>
+      <div>- _totalCount : long</div>
+      <div>+ ThreadCount : int</div>
+      <div>+ «event» ProgressUpdated</div>
+      <div>+ «event» PasswordFound</div>
+      <div>+ «event» AttackStopped</div>
+    </div>
+    <div class="methods">
+      <div>+ StartAsync(hash) : Task</div>
+      <div>+ Stop() : void</div>
+      <div>- RunAttack(hash, token) : void</div>
+      <div>- Partition&lt;T&gt;(src, parts)</div>
+    </div>
+  </div>
+
+  <!-- PasswordValidator -->
+  <div class="class" style="left:900px; top:330px;">
+    <div class="name">PasswordValidator</div>
+    <div class="attrs">
+      <div>- _targetHash : string</div>
+    </div>
+    <div class="methods">
+      <div>+ PasswordValidator(targetHash)</div>
+      <div>+ IsMatch(candidate) : bool</div>
+    </div>
+  </div>
+
+  <!-- BruteForceGenerator -->
+  <div class="class" style="left:900px; top:560px;">
+    <div class="name">BruteForceGenerator</div>
+    <div class="attrs">
+      <div>- _charset : string</div>
+      <div>- _maxLength : int</div>
+    </div>
+    <div class="methods">
+      <div>+ BruteForceGenerator(maxLength)</div>
+      <div>+ GenerateAll() : IEnumerable&lt;string&gt;</div>
+      <div>+ GenerateOfLength(len) : IEnumerable&lt;string&gt;</div>
+      <div>+ CombinationsForLength(len) : long</div>
+      <div>+ TotalCombinations() : long</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend" style="left:760px; top:760px; width:430px;">
+    <b>Legend (UML notation)</b>
+    ◆——  Composition (filled diamond, part can't exist without whole)<br>
+    ◇——  Aggregation (hollow diamond, part exists independently)<br>
+    ----&gt;  Dependency / «uses» (dashed arrow)<br>
+    + public&nbsp;&nbsp; - private&nbsp;&nbsp; # protected&nbsp;&nbsp; {static}<br>
+    Multiplicity: 1, 0..1, * (many)
+  </div>
+
+</div>
+</body>
+</html>
