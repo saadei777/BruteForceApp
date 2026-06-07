@@ -8,9 +8,9 @@ A WPF (.NET 8) application that demonstrates multi-threaded brute-force password
 |---|---|
 | Password hashing | SHA256 + static salt (`BruteForce_Static_Salt_2024`) |
 | Password length | Randomly generated in \[4, 6) characters |
-| Character set | a-z, A-Z, 0-9 (62 chars) |
+| Character set | a-z (26 chars) |
 | Search space | All combinations length 1 → 6 |
-| Threading | Up to `CPU cores - 1` threads (Thread-based) |
+| Threading | Up to `CPU cores - 1` threads (Task / Thread based) |
 | GUI | Progress bar, elapsed time, found-password display, start/stop |
 | Benchmark | Compares single-thread vs multi-thread execution time |
 
@@ -46,10 +46,9 @@ Or open in Visual Studio and press F5.
 - `MainWindow`: full GUI with progress bar, elapsed timer, start/stop, benchmark button
 
 ### v1.1 — Task 1: UML class diagram
-- `UML_ClassDiagram.puml` (PlantUML source), `UML_ClassDiagram.html` (lecture-style
-  rendering), `UML_ClassDiagram.png` (image for the report)
+- `UML_ClassDiagram.puml` (PlantUML source) and `UML_ClassDiagram.png` (image used in the report)
 
-### v1.2 — Bug fixes, performance & demo tooling
+### v1.2 — Bug fixes & performance
 - **Fixed crash on password-found:** `Task.WaitAll(tasks, token)` threw
   `OperationCanceledException` when the engine cancelled its own token; switched to a
   plain `Task.WaitAll(tasks)` and guarded the awaited call.
@@ -59,9 +58,12 @@ Or open in Visual Studio and press F5.
   allocations, genuinely parallel.
 - Alphabet set to lowercase a–z (26) so a length 4–5 password is crackable in seconds.
 - Progress bar denominator now grows per length searched, and shows 100% on found.
-- Added `capture-screens.ps1` (UI-Automation driver) + `screenshots/` for the report.
+- Added `screenshots/` of the running application.
 
 ### v1.3 — Test report
-- `TestReport.html` + rendered `TestReport.pdf`: cover page, UML diagram, requirement-by-
-  requirement functionality, single vs multi-thread performance, real screenshots, and the
-  challenges faced. `render-report.js` regenerates the PDF.
+- `TestReport.docx`: cover page, UML diagram, requirement-by-requirement functionality,
+  single vs multi-thread performance, real screenshots, and the challenges faced.
+
+### v1.4 — Final cleanup
+- Repository trimmed to the application source and its deliverables (report, UML diagram,
+  screenshots). IDE cache, build output, and temporary files are excluded via `.gitignore`.
