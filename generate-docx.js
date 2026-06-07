@@ -121,7 +121,7 @@ children.push(
   coverRow('Student ID:', '[ Your ID ]'),
   coverRow('Course / Group:', '[ Course — Group ]'),
   coverRow('Date:', '4 June 2026', false),
-  coverRow('GitHub repository:', '[ https://github.com/<you>/BruteForceApp ]'),
+  coverRow('GitHub repository:', 'https://github.com/saadei777/BruteForceApp'),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 600 },
     children: [t('Each task committed as a separate version (v1.0 – v1.3) — see commit history & README.md',
       { size: 18, color: '8893AB', italics: true })] }),

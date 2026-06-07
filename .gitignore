@@ -5,3 +5,11 @@ package-lock.json
 # Build output (a compiled copy is shipped separately in the Moodle zip)
 bin/
 obj/
+
+# Word/Office lock & temp files
+~$*
+
+# Visual Studio cache / user files
+.vs/
+*.suo
+*.user
